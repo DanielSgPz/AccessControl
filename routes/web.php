@@ -1,8 +1,12 @@
 <?php
 
+use App\Http\Controllers\Accesscontroller;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admincontroller;
+use App\Http\Controllers\Admindepartment;
+use App\Http\Controllers\AdminUsers;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,6 +19,24 @@ use App\Http\Controllers\AuthController;
 |
 */
 
+Route::get('/', function () {
+    return view('welcome');
+});
+
+Route::get('/accessControlRoom', function () {
+    return view('accessControlRoom');
+});
+Route::post('/access', [Accesscontroller::class, 'validateAccess'])->name('validateAccess');
+Route::get('/success', [Accesscontroller::class, 'accessSuccess'])->name('success');
+Route::get('/denied', [Accesscontroller::class, 'accessDenied'])->name('denied');
+
+
+// Authentication Routes
+Route::get('login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('login', [AuthController::class, 'login'])->name('login.submit');
+Route::post('logout', [AuthController::class, 'logout'])->name('logout');
+
+// Admin Routes
 Route::group(['middleware' => ['auth', 'superuser']], function () {
     Route::get('initialize', [AdminController::class, 'showInitializationForm'])->name('initialize');
     Route::post('initialize', [AdminController::class, 'initialize'])->name('initialize.submit');
@@ -23,11 +45,22 @@ Route::group(['middleware' => ['auth', 'superuser']], function () {
     Route::delete('admin/{id}/delete', [AdminController::class, 'deleteAdmin'])->name('admin.delete');
 });
 
-Route::get('/', function () {
-    return view('welcome');
-});
+//Management access control
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/employeeLogs', [DashboardController::class, 'employeeLogs'])->name('employeeLogs');
 
-//login management
-Route::get('login', [AuthController::class, 'showLoginForm'])->name('login');
-Route::post('login', [AuthController::class, 'login'])->name('login.submit');
-Route::post('logout', [AuthController::class, 'logout'])->name('logout');
+    Route::post('/upload-employees', [AdminUsers::class, 'bulkUpload'])->name('bulkUpload');
+
+    Route::get('/employees/export-pdf/{id?}', [DashboardController::class, 'exportEmployeeHistory'])->name('employees.export-pdf');
+
+
+    Route::get('/adminUsers', [AdminUsers::class, 'index'])->name('adminusers');
+    Route::post('/employees', [AdminUsers::class, 'store'])->name('employees.store');
+    Route::get('/employees/{id}', [AdminUsers::class, 'update'])->name('employees.update');
+    Route::delete('/employees/{id}', [AdminUsers::class, 'destroy'])->name('employees.delete');
+
+    Route::post('/department', [Admindepartment::class, 'store'])->name('departments.store');
+    Route::put('/department/{id}', [Admindepartment::class, 'update'])->name('departments.update');
+    Route::delete('/department/{id}', [Admindepartment::class, 'destroy'])->name('departments.delete');
+});

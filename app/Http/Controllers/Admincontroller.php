@@ -54,7 +54,7 @@ class Admincontroller extends Controller
             'active' => $status
         ]);
 
-        return redirect()->route('initialize')->with('success', 'Admi creado con éxito.');
+        return redirect()->route('initialize')->with('success', 'Admin created successfully');
     }
 
     public function editAdmin($id)
@@ -66,7 +66,7 @@ class Admincontroller extends Controller
             return response()->json($admin);
         }
 
-        return response()->json(['error' => 'Administrador no encontrado.'], 404);
+        return response()->json(['error' => 'Admin no found.'], 404);
     }
 
     public function updateAdmin(Request $request, $id)
@@ -98,10 +98,10 @@ class Admincontroller extends Controller
             $admin->active = $request->status === 'active' ? true : false;
             $admin->save();
 
-            return redirect()->route('initialize')->with('success', 'Administrador actualizado con éxito.');
+            return redirect()->route('initialize')->with('success', 'Adminupdate successfully');
         }
 
-        return redirect()->route('initialize')->withErrors(['message' => 'Administrador no encontrado.']);
+        return redirect()->route('initialize')->withErrors(['message' => 'Admin no found']);
     }
 
     public function deleteAdmin($id)
@@ -113,9 +113,9 @@ class Admincontroller extends Controller
             $admin->active= false;
             $admin->role = 'deleted_admin_room_911';
             $admin->save();
-            return redirect()->back()->with('success', 'Administrador eliminado con éxito.');
+            return redirect()->back()->with('success', 'Admin deleted successfully.');
         }
 
-        return redirect()->back()->withErrors(['message' => 'Administrador no encontrado.']);
+        return redirect()->back()->withErrors(['message' => 'Admin no found']);
     }
 }

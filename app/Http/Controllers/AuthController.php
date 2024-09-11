@@ -20,18 +20,14 @@ class AuthController extends Controller
     {
         $credentials = $request->only('email', 'password');
 
-        // Intentar autenticar al usuario
         if (Auth::attempt($credentials)) {
-            // Verificar si el usuario es superusuario
+            // Check superusuario
             if (Superuser::where('user_id', auth()->id())->exists()) {
-                return redirect()->route('initialize'); // Ruta protegida para superusuario
+                return redirect()->route('initialize'); // Protected route for superuser
             }
-
-            // Si no es superusuario, redirigir a otra parte (opcional)
-            return redirect()->route('dashboard.dashboard');
+            return redirect()->route('dashboard');
         }
 
-        // Si las credenciales son incorrectas, redirigir al login con error
         return back()->withErrors([
             'email' => 'Las credenciales no coinciden con nuestros registros.',
         ]);
@@ -41,6 +37,6 @@ class AuthController extends Controller
     public function logout()
     {
         Auth::logout();
-        return redirect()->route('login');
+        return redirect('/');
     }
 }
