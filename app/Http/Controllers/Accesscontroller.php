@@ -38,7 +38,7 @@ class Accesscontroller extends Controller
             } else {
                 AccessLog::create([
                     'employee_id' => $employeeId,
-                    'success' => true,
+                    'success' => false,
                     'log' => now(),
                     'detail' => 'Employee no granted',
                 ]);
